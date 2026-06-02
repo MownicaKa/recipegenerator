@@ -1,16 +1,20 @@
 import { useState } from 'react';
 import './App.css';
+import { generateRecipe } from './api/recipeApi';
 
 function App() {
   const [inputText, setInputText] = useState('');
   const [submittedText, setSubmittedText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [recipe, setRecipe] = useState(null);
+  const [apiError, setApiError] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   const isValidInput = (value) => {
     return /^[A-Za-z0-9\s.,'\-]*$/.test(value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const trimmedText = inputText.trim();
 
@@ -28,6 +32,19 @@ function App() {
 
     setErrorMessage('');
     setSubmittedText(trimmedText);
+
+    // Call backend API
+    setLoading(true);
+    setApiError('');
+    setRecipe(null);
+    try {
+      const data = await generateRecipe(trimmedText);
+      setRecipe(data);
+    } catch (err) {
+      setApiError(err.message || 'API request failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (event) => {
@@ -64,6 +81,17 @@ function App() {
           <div className="output-box">
             <h2>Input received</h2>
             <p>{submittedText}</p>
+          </div>
+        )}
+        {loading && <div className="output-box"><p>Loading...</p></div>}
+        {apiError && <div className="error-message">{apiError}</div>}
+        {recipe && (
+          <div className="output-box">
+            <h2>{recipe.title}</h2>
+            <p><strong>Ingredients:</strong> {Array.isArray(recipe.ingredients) ? recipe.ingredients.join(', ') : recipe.ingredients}</p>
+            <ol>
+              {Array.isArray(recipe.steps) && recipe.steps.map((s, i) => <li key={i}>{s}</li>)}
+            </ol>
           </div>
         )}
       </header>
