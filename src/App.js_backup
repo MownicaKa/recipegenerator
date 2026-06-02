@@ -4,44 +4,17 @@ import './App.css';
 function App() {
   const [inputText, setInputText] = useState('');
   const [submittedText, setSubmittedText] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const isValidInput = (value) => {
-    return /^[A-Za-z0-9\s.,'\-]*$/.test(value);
-  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const trimmedText = inputText.trim();
-
-    if (!trimmedText) {
-      setErrorMessage('Please enter some text before submitting.');
-      setSubmittedText('');
-      return;
-    }
-
-    if (!isValidInput(trimmedText)) {
-      setErrorMessage('Only letters, numbers, spaces, commas, periods, hyphens, and apostrophes are allowed.');
-      setSubmittedText('');
-      return;
-    }
-
-    setErrorMessage('');
-    setSubmittedText(trimmedText);
-  };
-
-  const handleChange = (event) => {
-    const value = event.target.value;
-    if (errorMessage) {
-      setErrorMessage('');
-    }
-    setInputText(value);
+    setSubmittedText(inputText.trim());
   };
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>Recipe Generator</h1>
+        <p>Welcome to the Recipe Generator! This application helps you create delicious recipes based on your preferences and available ingredients. Whether you're looking for a quick meal or a gourmet dish, our recipe generator has got you covered. Simply input your desired ingredients, dietary restrictions, and cooking time, and let our algorithm do the rest. Get ready to discover new flavors and impress your friends and family with your culinary creations!</p>
         <p>Type multiple words below and submit to see your input reflected on the page.</p>
 
         <form className="input-form" onSubmit={handleSubmit}>
@@ -50,11 +23,10 @@ function App() {
             id="multiword-input"
             className="text-input"
             value={inputText}
-            onChange={handleChange}
+            onChange={(event) => setInputText(event.target.value)}
             placeholder="e.g. chicken curry with coconut milk and rice"
             rows={5}
           />
-          {errorMessage && <div className="error-message">{errorMessage}</div>}
           <button type="submit" className="submit-button">
             Submit
           </button>
